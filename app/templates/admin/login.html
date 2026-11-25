@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% block admin_title %}Sign in{% endblock %}
+{% block admin_content %}
+<div class="login">
+  <form class="form-card" method="post" action="/admin/login" novalidate>
+    <h1 class="page-title">Staff sign in</h1>
+    <p class="muted">Manage inventory and follow up on chat leads.</p>
+    {% if error %}<p class="alert" role="alert">{{ error }}</p>{% endif %}
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="field">
+      <label for="username">Username</label>
+      <input class="input" id="username" name="username" autocomplete="username" required autofocus>
+    </div>
+    <div class="field mt-12">
+      <label for="password">Password</label>
+      <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    {% if demo_password %}<p class="hint mt-12">Demo access: <strong>admin</strong> / <strong>{{ demo_password }}</strong></p>{% endif %}
+    <div class="form-actions"><button class="btn btn-primary w-full" type="submit">Sign in</button></div>
+  </form>
+</div>
+{% endblock %}

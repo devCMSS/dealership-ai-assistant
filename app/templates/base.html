@@ -1,0 +1,73 @@
+{% from "_macros.html" import icon %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ dealership }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}Browse {{ dealership }}'s inventory and get instant answers from an AI sales assistant.{% endblock %}">
+  <meta name="theme-color" content="#12284a">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/theme.js"></script>
+</head>
+<body data-vehicle-id="{% block vehicle_id %}{% endblock %}">
+  <a class="sr-only" href="#main">Skip to content</a>
+  {% if demo_mode %}<div class="demo-bar">Portfolio demo: {{ dealership }} is a fictional dealership and the inventory is made up.</div>{% endif %}
+  {% block header %}
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="/" aria-label="{{ dealership }} home">
+        <span class="logo-mark">{{ icon("spark") }}</span>{{ dealership }}
+      </a>
+      <nav class="nav" aria-label="Main">
+        {% set path = request.url.path %}
+        <a href="/inventory" {% if path.startswith("/inventory") or path.startswith("/vehicles") %}aria-current="page"{% endif %}>Inventory</a>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle dark mode">{{ icon("moon") }}</button>
+      </nav>
+    </div>
+  </header>
+  {% endblock %}
+
+  <main id="main">{% block content %}{% endblock %}</main>
+
+  {% block footer %}
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>&copy; {{ dealership }} &middot; Demo project</span>
+      <span>Mon-Fri 9am-7pm &middot; Sat 9am-5pm</span>
+      <a href="/admin">Staff sign in</a>
+    </div>
+  </footer>
+
+  <button class="btn btn-primary chat-launcher" type="button" data-chat-open aria-controls="chat" aria-expanded="false">
+    {{ icon("chat") }} Ask our assistant
+  </button>
+  <section class="chat" id="chat" hidden aria-label="Chat with the sales assistant">
+    <div class="chat-head">
+      <span class="avatar">{{ icon("spark") }}</span>
+      <div>
+        <strong>Sales assistant</strong>
+        <small>{% if assistant == "claude" %}AI assistant &middot; replies in seconds{% else %}Offline demo assistant{% endif %}</small>
+      </div>
+      <button class="icon-btn" type="button" data-chat-close aria-label="Close chat">{{ icon("close") }}</button>
+    </div>
+    <div class="chat-log" id="chat-log" aria-live="polite"></div>
+    <div class="chat-suggestions" id="chat-suggestions">
+      <button type="button">SUVs under $35k</button>
+      <button type="button">Any hybrids?</button>
+      <button type="button">I need a pickup truck</button>
+      <button type="button">Do you take trade-ins?</button>
+    </div>
+    <form class="chat-form" id="chat-form" autocomplete="off">
+      <label class="sr-only" for="chat-input">Message</label>
+      <input class="input" id="chat-input" name="message" maxlength="1000" placeholder="Ask about any car..." required>
+      <button class="btn btn-primary" type="submit" aria-label="Send">{{ icon("send") }}</button>
+    </form>
+  </section>
+  <script src="/static/chat.js" defer></script>
+  {% endblock %}
+</body>
+</html>

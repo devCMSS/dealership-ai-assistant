@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block admin_title %}{{ "Edit vehicle" if vehicle else "Add vehicle" }}{% endblock %}
+{% macro field(name, label, type="text", required=true, attrs="") -%}
+<div class="field {% if errors.get(name) %}has-error{% endif %}">
+  <label for="v-{{ name }}">{{ label }}</label>
+  <input class="input" id="v-{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ values.get(name, '') }}" {% if required %}required{% endif %} {{ attrs }}
+         {% if errors.get(name) %}aria-invalid="true" aria-describedby="e-{{ name }}"{% endif %}>
+  {% if errors.get(name) %}<span class="error" id="e-{{ name }}">{{ errors[name] }}</span>{% endif %}
+</div>
+{%- endmacro %}
+{% macro choice(name, label, options, blank="") -%}
+<div class="field {% if errors.get(name) %}has-error{% endif %}">
+  <label for="v-{{ name }}">{{ label }}</label>
+  <select class="input" id="v-{{ name }}" name="{{ name }}" {% if errors.get(name) %}aria-invalid="true" aria-describedby="e-{{ name }}"{% endif %}>
+    {% if blank %}<option value="">{{ blank }}</option>{% endif %}
+    {% for value, text in options %}<option value="{{ value }}" {% if values.get(name) == value %}selected{% endif %}>{{ text }}</option>{% endfor %}
+  </select>
+  {% if errors.get(name) %}<span class="error" id="e-{{ name }}">{{ errors[name] }}</span>{% endif %}
+</div>
+{%- endmacro %}
+{% block admin_content %}
+<div class="toolbar">
+  <h1 class="page-title">{{ "Edit " ~ vehicle.title if vehicle else "Add vehicle" }}</h1>
+  <a class="btn btn-ghost" href="/admin">Back to vehicles</a>
+</div>
+{% if errors %}<p class="alert" role="alert">Please fix the highlighted fields.</p>{% endif %}
+<form class="form-card" method="post" enctype="multipart/form-data"
+      action="{{ '/admin/vehicles/%d/edit' % vehicle.id if vehicle else '/admin/vehicles/new' }}" data-once>
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div class="form-grid">
+    {{ field("make", "Make", attrs='maxlength="40" autocomplete="off"') }}
+    {{ field("model", "Model", attrs='maxlength="40" autocomplete="off"') }}
+    {{ field("trim", "Trim", required=false, attrs='maxlength="40"') }}
+    {{ field("year", "Year", "number", attrs='inputmode="numeric" min="1990" max="2100"') }}
+    {{ choice("body_type", "Body type", [("sedan","Sedan"),("suv","SUV"),("pickup","Pickup"),("hatchback","Hatchback"),("coupe","Coupe"),("minivan","Minivan")], "Detect from model") }}
+    {{ choice("condition", "Condition", [("used","Used"),("certified","Certified pre-owned"),("new","New")]) }}
+    {{ field("price", "Price (USD)", attrs='inputmode="numeric"') }}
+    {{ field("mileage", "Mileage", attrs='inputmode="numeric"') }}
+    {{ choice("transmission", "Transmission", [("automatic","Automatic"),("cvt","CVT"),("manual","Manual")]) }}
+    {{ choice("fuel", "Fuel", [("gasoline","Gasoline"),("hybrid","Hybrid"),("electric","Electric"),("diesel","Diesel")]) }}
+    {{ field("color", "Color", attrs='maxlength="30"') }}
+    <div class="field {% if errors.get('photo') %}has-error{% endif %}">
+      <label for="v-photo">Photo (JPEG, PNG or WebP, max 5 MB)</label>
+      <input class="input" id="v-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp">
+      {% if errors.get("photo") %}<span class="error">{{ errors.photo }}</span>{% endif %}
+    </div>
+    <div class="field span-all {% if errors.get('description') %}has-error{% endif %}">
+      <label for="v-description">Description</label>
+      <textarea class="input" id="v-description" name="description" maxlength="2000">{{ values.get("description", "") }}</textarea>
+      {% if errors.get("description") %}<span class="error">{{ errors.description }}</span>{% endif %}
+    </div>
+    <label class="check span-all"><input type="checkbox" name="featured" {% if values.get("featured") %}checked{% endif %}> Feature on the home page</label>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">{{ "Save changes" if vehicle else "Add vehicle" }}</button>
+    <a class="btn btn-ghost" href="/admin">Cancel</a>
+  </div>
+</form>
+{% endblock %}

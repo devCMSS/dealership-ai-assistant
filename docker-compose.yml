@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - dealership-data:/app/data
+volumes:
+  dealership-data:

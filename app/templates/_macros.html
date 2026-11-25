@@ -1,0 +1,64 @@
+{% macro car_art(body, color="Silver", label="") -%}
+{%- set shapes = {
+  "sedan": ("M20 96 L30 76 Q40 70 72 68 L112 48 Q122 42 142 42 L200 42 Q216 42 228 52 L252 68 Q292 72 302 82 L302 96 Z",
+            ["M120 52 L142 47 L168 47 L168 66 L102 66 Z", "M174 47 L198 47 Q208 47 216 54 L228 66 L174 66 Z"], 19),
+  "suv": ("M18 98 L20 72 Q24 62 50 60 L82 58 L102 36 Q108 30 122 30 L230 30 Q246 30 256 42 L270 58 Q300 62 302 76 L302 98 Z",
+          ["M108 40 L124 36 L172 36 L172 58 L92 58 Z", "M178 36 L228 36 Q238 36 244 44 L254 58 L178 58 Z"], 22),
+  "pickup": ("M18 98 L18 70 Q20 62 40 60 L70 58 L92 36 Q96 32 108 32 L172 32 Q180 32 182 40 L184 60 L302 60 L302 98 Z",
+             ["M100 40 L112 38 L174 38 L176 58 L86 58 Z"], 22),
+  "hatchback": ("M24 96 L28 74 Q34 68 64 66 L100 44 Q108 40 124 40 L198 40 Q216 40 228 54 L246 78 L248 96 Z",
+                ["M108 48 L126 45 L160 45 L160 64 L94 64 Z", "M166 45 L196 45 Q208 45 216 54 L226 64 L166 64 Z"], 19),
+  "coupe": ("M18 96 L24 80 Q34 74 82 70 L132 50 Q142 46 162 46 L198 46 Q214 46 230 58 L252 72 Q294 76 302 84 L302 96 Z",
+            ["M140 54 L160 50 L190 50 Q204 50 214 58 L222 68 L122 68 Z"], 18),
+  "minivan": ("M20 98 L20 64 Q22 52 40 48 L70 34 Q78 30 96 30 L262 30 Q278 30 284 46 L298 70 L302 98 Z",
+              ["M76 40 L92 36 L150 36 L150 58 L62 58 Z", "M156 36 L210 36 L210 58 L156 58 Z", "M216 36 L258 36 Q268 36 272 46 L276 58 L216 58 Z"], 20),
+} -%}
+{%- set shape = shapes.get(body, shapes["sedan"]) -%}
+<svg viewBox="0 0 320 130" role="img" aria-label="{{ label or ('Illustration of a ' ~ body) }}" focusable="false">
+  <ellipse cx="160" cy="118" rx="140" ry="7" fill="rgba(15,27,45,.18)"/>
+  <path d="{{ shape[0] }}" fill="{{ paint_for(color) }}" stroke="rgba(15,27,45,.35)" stroke-width="1.5"/>
+  {%- for w in shape[1] %}<path d="{{ w }}" fill="rgba(20,32,52,.72)"/>{% endfor %}
+  <rect x="288" y="78" width="12" height="6" rx="2" fill="rgba(255,236,180,.9)"/>
+  {%- for x in (80, 242) %}
+  <circle cx="{{ x }}" cy="98" r="{{ shape[2] }}" fill="#1c2230"/>
+  <circle cx="{{ x }}" cy="98" r="{{ shape[2] * 0.5 }}" fill="#a7b0bd"/>
+  {%- endfor %}
+</svg>
+{%- endmacro %}
+
+{% macro vehicle_media(v) -%}
+{%- if v.photo %}<img src="/uploads/{{ v.photo }}" alt="{{ v.title }}" loading="lazy" decoding="async">
+{%- else %}{{ car_art(v.body_type, v.color, v.title) }}{% endif -%}
+{%- endmacro %}
+
+{% macro vehicle_card(v) -%}
+<article class="card">
+  <div class="card-media">
+    {{ vehicle_media(v) }}
+    <span class="badge {{ v.condition }}">{{ "Certified" if v.condition == "certified" else v.condition|title }}</span>
+  </div>
+  <div class="card-body">
+    <h3><a href="/vehicles/{{ v.id }}">{{ v.title }}</a></h3>
+    <div class="specs tabular">
+      <span>{{ "New" if v.condition == "new" else v.mileage|miles }}</span>
+      <span>{{ v.transmission|upper if v.transmission == "cvt" else v.transmission|title }}</span>
+      <span>{{ v.fuel|title }}</span>
+    </div>
+    <div class="price tabular">{{ v.price|money }}</div>
+  </div>
+</article>
+{%- endmacro %}
+
+{% macro icon(name) -%}
+{%- if name == "chat" -%}
+<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+{%- elif name == "close" -%}
+<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+{%- elif name == "send" -%}
+<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+{%- elif name == "moon" -%}
+<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+{%- elif name == "spark" -%}
+<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8z"/></svg>
+{%- endif -%}
+{%- endmacro %}

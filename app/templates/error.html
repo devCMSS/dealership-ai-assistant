@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ status }} | {{ dealership }}{% endblock %}
+{% block content %}
+<div class="wrap section">
+  <div class="empty">
+    <p class="eyebrow">Error {{ status }}</p>
+    <h1>{{ "Page not found" if status == 404 else "Something went wrong" }}</h1>
+    <p>{{ message }}</p>
+    <a class="btn btn-primary" href="/inventory">Browse inventory</a>
+  </div>
+</div>
+{% endblock %}

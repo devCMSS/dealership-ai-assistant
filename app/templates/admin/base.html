@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{% block admin_title %}Admin{% endblock %} | {{ dealership }} admin{% endblock %}
+{% block header %}
+<header class="admin-bar">
+  <div class="wrap">
+    <a class="logo logo-admin" href="/admin">{{ dealership }} &middot; Admin</a>
+    {% if request.session.get("admin") %}
+    <nav class="admin-nav" aria-label="Admin">
+      {% set path = request.url.path %}
+      <a href="/admin" {% if path == "/admin" or path.startswith("/admin/vehicles") %}aria-current="page"{% endif %}>Vehicles</a>
+      <a href="/admin/leads" {% if path.startswith("/admin/leads") %}aria-current="page"{% endif %}>Leads {% if new_leads %}<span class="pill">{{ new_leads }}</span>{% endif %}</a>
+      <a href="/" >View site</a>
+      <form method="post" action="/admin/logout">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <button class="btn btn-on-dark btn-sm" type="submit">Sign out</button>
+      </form>
+    </nav>
+    {% endif %}
+  </div>
+</header>
+{% endblock %}
+{% block content %}
+<div class="wrap">
+  {% set flash = pop_flash(request) %}
+  {% if flash %}<div class="flash" role="status">{{ flash }}</div>{% endif %}
+  {% block admin_content %}{% endblock %}
+</div>
+{% endblock %}
+{% block footer %}<script src="/static/admin.js" defer></script>{% endblock %}

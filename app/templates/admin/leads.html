@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+{% block admin_title %}Leads{% endblock %}
+{% block admin_content %}
+<div class="toolbar">
+  <div>
+    <h1 class="page-title">Leads</h1>
+    <p class="muted m-0">Shoppers who left a name or contact in the chat.</p>
+  </div>
+</div>
+{% if rows %}
+<table class="table">
+  <thead><tr><th>Name</th><th>Contact</th><th>Interest</th><th>Updated (UTC)</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for l in rows %}
+    <tr>
+      <td><strong>{{ l.name or "Unknown" }}</strong></td>
+      <td data-label="Contact">{{ l.contact or "Not given yet" }}</td>
+      <td data-label="Interest">{{ l.interest or "-" }}</td>
+      <td data-label="Updated (UTC)" class="tabular">{{ l.updated_at }}</td>
+      <td>
+        <form method="post" action="/admin/leads/{{ l.id }}/status">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          {% if l.status == "new" %}
+          <input type="hidden" name="status" value="contacted">
+          <button class="btn btn-primary btn-sm" type="submit">Mark contacted</button>
+          {% else %}
+          <input type="hidden" name="status" value="new">
+          <button class="btn btn-ghost btn-sm" type="submit">Contacted &middot; undo</button>
+          {% endif %}
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><p>No leads yet. They appear here as soon as a shopper shares a name or contact in the chat.</p></div>
+{% endif %}
+{% endblock %}

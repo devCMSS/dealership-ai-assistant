@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import vehicle_card, vehicle_media %}
+{% block title %}{{ vehicle.title }} | {{ dealership }}{% endblock %}
+{% block description %}{{ vehicle.title }}, {{ vehicle.condition }}, {{ vehicle.price|money }}. {{ vehicle.description[:120] }}{% endblock %}
+{% block vehicle_id %}{{ vehicle.id }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/inventory">Inventory</a> / {{ vehicle.title }}</nav>
+  <div class="detail">
+    <div class="card-media detail-media">{{ vehicle_media(vehicle) }}</div>
+    <aside class="cta-panel" aria-label="Price and next steps">
+      <p class="eyebrow">{{ vehicle.year }} {{ vehicle.make }}</p>
+      <h1>{{ vehicle.model }}{% if vehicle.trim %} {{ vehicle.trim }}{% endif %}</h1>
+      <div class="price tabular">{{ vehicle.price|money }}</div>
+      <p class="muted">Listed price. Taxes, title and registration not included.</p>
+      <button class="btn btn-primary" type="button" data-chat-open data-chat-prefill="I'd like to book a test drive of this {{ vehicle.make }} {{ vehicle.model }}.">Book a test drive</button>
+      <button class="btn btn-ghost" type="button" data-chat-open data-chat-prefill="Tell me more about this {{ vehicle.make }} {{ vehicle.model }}.">Ask about this car</button>
+    </aside>
+    <div class="detail-specs">
+      <dl class="spec-grid">
+        <div class="spec"><dt>Condition</dt><dd>{{ "Certified pre-owned" if vehicle.condition == "certified" else vehicle.condition|title }}</dd></div>
+        <div class="spec"><dt>Mileage</dt><dd class="tabular">{{ "New" if vehicle.condition == "new" else vehicle.mileage|miles }}</dd></div>
+        <div class="spec"><dt>Body type</dt><dd>{{ "SUV" if vehicle.body_type == "suv" else vehicle.body_type|title }}</dd></div>
+        <div class="spec"><dt>Transmission</dt><dd>{{ "CVT" if vehicle.transmission == "cvt" else vehicle.transmission|title }}</dd></div>
+        <div class="spec"><dt>Fuel</dt><dd>{{ vehicle.fuel|title }}</dd></div>
+        <div class="spec"><dt>Color</dt><dd>{{ vehicle.color }}</dd></div>
+      </dl>
+      {% if vehicle.description %}<h2>About this vehicle</h2><p>{{ vehicle.description }}</p>{% endif %}
+    </div>
+  </div>
+
+  {% if similar %}
+  <section class="section" aria-labelledby="similar">
+    <div class="section-head"><h2 id="similar">Similar vehicles</h2></div>
+    <div class="grid">{% for v in similar %}{{ vehicle_card(v) }}{% endfor %}</div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% block admin_title %}Vehicles{% endblock %}
+{% block admin_content %}
+<div class="toolbar">
+  <h1 class="page-title">Vehicles</h1>
+  <form method="get" action="/admin" role="search">
+    <label class="sr-only" for="q">Search vehicles</label>
+    <input class="input" id="q" name="q" value="{{ q }}" placeholder="Search make, model, color" type="search" maxlength="60">
+  </form>
+  <a class="btn btn-primary" href="/admin/vehicles/new">Add vehicle</a>
+</div>
+{% if rows %}
+<table class="table">
+  <thead><tr><th>Vehicle</th><th>Type</th><th>Price</th><th>Mileage</th><th>Status</th><th><span class="sr-only">Actions</span></th></tr></thead>
+  <tbody>
+  {% for v in rows %}
+    <tr>
+      <td><strong>{{ v.title }}</strong>{% if v.featured %} <span class="pill">Featured</span>{% endif %}<br><span class="muted">#{{ v.id }} &middot; {{ v.color }}</span></td>
+      <td data-label="Type">{{ "SUV" if v.body_type == "suv" else v.body_type|title }}</td>
+      <td data-label="Price" class="tabular">{{ v.price|money }}</td>
+      <td data-label="Mileage" class="tabular">{{ v.mileage|miles }}</td>
+      <td data-label="Status"><span class="status {{ 'on' if v.active else 'off' }}">{{ "Listed" if v.active else "Hidden" }}</span></td>
+      <td>
+        <div class="actions">
+          <a class="btn btn-ghost btn-sm" href="/admin/vehicles/{{ v.id }}/edit">Edit</a>
+          <form method="post" action="/admin/vehicles/{{ v.id }}/toggle">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <button class="btn btn-ghost btn-sm" type="submit">{{ "Hide" if v.active else "List" }}</button>
+          </form>
+          <form method="post" action="/admin/vehicles/{{ v.id }}/delete" data-confirm>
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <button class="btn btn-danger btn-sm" type="submit" data-confirm-label="Confirm delete">Delete</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><p>{{ "No vehicles match that search." if q else "No vehicles yet." }}</p><a class="btn btn-primary" href="/admin/vehicles/new">Add the first vehicle</a></div>
+{% endif %}
+{% endblock %}

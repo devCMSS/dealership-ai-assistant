@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import vehicle_card, car_art %}
+{% block title %}{{ dealership }} | Find your next car{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Quality new and used vehicles</p>
+      <h1>Tell us what you need. We'll find the car.</h1>
+      <p class="lead">Ask our assistant in plain words, like "a hybrid SUV under $35k". It knows every car on the lot right now and connects you with an advisor when you're ready.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" type="button" data-chat-open>Ask the assistant</button>
+        <a class="btn btn-on-dark" href="/inventory">Browse inventory</a>
+      </div>
+    </div>
+    <div class="hero-chat" aria-hidden="true">
+      <div class="bubble user">Looking for a hybrid SUV for a family of four, under $35k</div>
+      <div class="bubble bot">We have a 2023 Toyota RAV4 XLE Hybrid at $33,400: AWD, 40 mpg and only 15,800 miles. Want to book a test drive?</div>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" aria-labelledby="shop-by-type">
+  <div class="section-head"><h2 id="shop-by-type">Shop by body type</h2></div>
+  <div class="body-chips">
+    {% for body in body_types %}
+    <a class="body-chip" href="/inventory?body_type={{ body }}">
+      {{ car_art(body, "Silver", "") }}
+      <strong>{{ "SUVs" if body == "suv" else body ~ "s" }}</strong>
+      <span>{{ counts[body] }} available</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section wrap" aria-labelledby="featured">
+  <div class="section-head">
+    <h2 id="featured">Featured vehicles</h2>
+    <a class="btn btn-ghost btn-sm" href="/inventory">See all inventory</a>
+  </div>
+  {% if featured %}
+  <div class="grid">{% for v in featured %}{{ vehicle_card(v) }}{% endfor %}</div>
+  {% else %}
+  <div class="empty">No vehicles are listed right now. Check back soon.</div>
+  {% endif %}
+</section>
+
+<section class="section wrap" aria-labelledby="how">
+  <div class="section-head"><h2 id="how">How it works</h2></div>
+  <div class="steps">
+    <div class="step"><h3>Describe what you need</h3><p class="muted">Budget, size, fuel, must-haves. The assistant only suggests cars that are actually on the lot.</p></div>
+    <div class="step"><h3>Compare the matches</h3><p class="muted">Open any suggestion to see the full specs and price, with no sign-up required.</p></div>
+    <div class="step"><h3>Meet an advisor</h3><p class="muted">Leave a name and phone or email in the chat. An advisor confirms your test drive.</p></div>
+  </div>
+</section>
+{% endblock %}
